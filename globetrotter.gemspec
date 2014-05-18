@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["nlopez@gmail.com"]
   spec.summary       = %q{Resolve DNS records at many different nameservers all over the world.}
   # spec.description   = %q{TODO: Write a longer description. Optional.}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/amplify-education/globetrotter"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
