@@ -27,7 +27,7 @@ opts = Trollop.options do
   opt :concurrency,
       'Number of concurrent DNS requests to make',
       type: Integer,
-      default: 100,
+      default: 10,
       short: '-p'
 end
 

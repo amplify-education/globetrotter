@@ -13,7 +13,7 @@ class Globetrotter
     @ns_count_to_check = options.fetch(:ns_count_to_check, 100)
     @timeout_seconds = options.fetch(:timeout_seconds, 2)
     @query = options.fetch(:query, 'googleapis.com')
-    @concurrency = options.fetch(:concurrency, 100)
+    @concurrency = options.fetch(:concurrency, 10)
     @ns_ips = fetch_ns_ips
   end
 
