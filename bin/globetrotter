@@ -1,0 +1,52 @@
+#!/usr/bin/env ruby
+
+$:.unshift File.join(File.dirname(__FILE__), %w{.. lib})
+require 'globetrotter'
+require 'trollop'
+
+opts = Trollop.options do
+  opt :ns_count_to_check,
+      'How many nameservers to query',
+      type: Integer,
+      default: 100,
+      short: '-c'
+  opt :ns_max_age_minutes,
+      'Query nameservers validated <= this many minutes ago',
+      type: Integer,
+      default: 60,
+      short: '-a'
+  opt :query,
+      'Hostname to lookup',
+      type: String,
+      default: 'googleapis.com'
+  opt :timeout_seconds,
+      'Seconds to wait before queries timeout',
+      type: Integer,
+      default: 2,
+      short: '-t'
+  opt :concurrency,
+      'Number of concurrent DNS requests to make',
+      type: Integer,
+      default: 100,
+      short: '-p'
+end
+
+ns_count_to_check = opts.ns_count_to_check
+ns_max_age_minutes = opts.ns_max_age_minutes
+timeout_seconds = opts.timeout_seconds
+concurrency = opts.concurrency
+query = opts.query
+
+Trollop.die :ns_count_to_check, 'must be positive' if ns_count_to_check < 0
+Trollop.die :ns_max_age_minutes, 'must be positive' if ns_max_age_minutes < 0
+Trollop.die :timeout_seconds, 'must be positive' if ns_max_age_minutes < 0
+Trollop.die :concurrency, 'must be positive' if ns_max_age_minutes < 0
+
+gt = Globetrotter.new(
+  query: query,
+  ns_count_to_check: ns_count_to_check,
+  ns_max_age_minutes: ns_max_age_minutes,
+  timeout_seconds: timeout_seconds,
+  concurrency: concurrency
+)
+gt.run

@@ -1,3 +1,3 @@
-module Globetrotter
-  VERSION = "0.0.1"
+class Globetrotter
+  VERSION = "0.0.3"
 end

@@ -7,9 +7,9 @@ Gem::Specification.new do |spec|
   spec.name          = "globetrotter"
   spec.version       = Globetrotter::VERSION
   spec.authors       = ["Nick Lopez"]
-  spec.email         = ["nlopez@amplify.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
+  spec.email         = ["nlopez@gmail.com"]
+  spec.summary       = %q{Resolve DNS records at many different nameservers all over the world.}
+  # spec.description   = %q{TODO: Write a longer description. Optional.}
   spec.homepage      = ""
   spec.license       = "MIT"
 
@@ -20,4 +20,8 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.6"
   spec.add_development_dependency "rake"
+
+  spec.add_runtime_dependency 'rubydns', '~> 0.8'
+  spec.add_runtime_dependency 'trollop', '~> 2.0'
+  spec.add_runtime_dependency 'wrest', '~> 1.5'
 end
