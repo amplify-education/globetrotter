@@ -1,28 +1,24 @@
-# Globetrotter
+# globetrotter
 
-TODO: Write a gem description
+globetrotter retrieves a list of DNS servers around the world from the [Public DNS Server List](http://public-dns.tk/) and runs your query against them. This is particularly handy for compiling list of SaaS endpoint IPs in cases where the provider doesn't specify them.
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-    gem 'globetrotter'
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install globetrotter
+`gem install globetrotter`
 
 ## Usage
+Query 100 DNS servers for googleapis.com, making 10 requests in parallel at a time:
+`globetrotter -q googleapis.com -c 100 -p 10`
 
-TODO: Write usage instructions here
+See `globetrotter -h` for all parameters
+
+## TODO
+* Improve command line argument parsing
+* Handle non-A records
 
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/globetrotter/fork )
+1. [Fork it](https://github.com/amplify-education/globetrotter/fork)
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
