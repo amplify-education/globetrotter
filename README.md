@@ -4,7 +4,7 @@ globetrotter retrieves a list of DNS servers around the world from the [Public D
 
 ## Installation
 
-`gem install globetrotter`
+    $ gem install globetrotter
 
 ## Usage
 Query 100 DNS servers for googleapis.com, making 10 requests in parallel at a time (defaults):
