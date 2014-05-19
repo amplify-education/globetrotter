@@ -12,8 +12,8 @@ class GlobetrotterOptions
     options.domain = 'googleapis.com'
     options.ns_count_to_check = 100
     options.ns_max_age_minutes = 60
-    options.timeout_seconds = 2
-    options.ns_query_concurrency = 10
+    options.timeout_seconds = 5
+    # options.ns_query_concurrency = 10
 
     opt_parser = OptionParser.new do |opts|
       opts.banner = 'Usage: globetrotter [options] example.org'
@@ -23,12 +23,12 @@ class GlobetrotterOptions
       opts.on('-n 100', Integer, 'Query N name servers') do |o|
         options.ns_count_to_check = o
       end
-      opts.on('-t 2', Integer, 'Wait T seconds per request') do |o|
+      opts.on('-t 5', Integer, 'Wait time seconds per request') do |o|
         options.timeout_seconds = o
       end
-      opts.on('-p 10', Integer, 'Query P name servers in parallel') do |o|
-        options.ns_query_concurrency = o
-      end
+      # opts.on('-p 10', Integer, 'Query P name servers in parallel') do |o|
+      #   options.ns_query_concurrency = o
+      # end
       opts.on('-a 60', Integer, 'Use name servers checked less than A minutes ago') do |o|
         options.ns_max_age_minutes = o
       end

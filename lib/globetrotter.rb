@@ -1,20 +1,22 @@
 require_relative './globetrotter/version'
 require_relative './globetrotter/nameserver'
+require 'dnsruby'
 require 'wrest'
-require 'rubydns'
 require 'time'
 require 'date'
 require 'set'
 require 'ipaddr'
+require 'pp'
+
+include Dnsruby
 
 class Globetrotter
   def initialize(options)
     @ns_max_age_minutes = options.ns_max_age_minutes
     @ns_count_to_check = options.ns_count_to_check
-    @timeout_seconds = options.timeout_seconds
     @query = options.domain
-    @concurrency = options.ns_query_concurrency
     @ns_ips = fetch_ns_ips
+    @timeout_seconds = options.timeout_seconds
   end
 
   def run
@@ -23,44 +25,54 @@ class Globetrotter
     @ns_ips = @ns_ips.sample(@ns_count_to_check)
 
     message = "Found #{ns_count} nameserver(s). "\
-              "Querying #{@ns_count_to_check} of those "\
-              "for #{query}, #{@concurrency} at a time, "\
+              "Querying #{@ns_count_to_check} of those for '#{query}' "\
               "with a timeout of #{@timeout_seconds} second(s)."
     $stderr.puts message
 
-    EM.run do
-      result_ips = Set.new
-      ok = 0
-      nok = 0
-      EM::Iterator.new(@ns_ips, @concurrency).each(
-        proc do |ns_ip, iter|
-          resolver = RubyDNS::Resolver.new(
-            [[:udp, ns_ip.to_s, 53]],
-            timeout: @timeout_seconds
-          )
-          resolver.query(query) do |response|
-            case response
-            when RubyDNS::Message
-              response.answer.each do |answer|
-                address = answer[2].address.to_s
-                result_ips.add(address)
-              end
-              ok += 1
-              iter.next
-            when RubyDNS::ResolutionFailure
-              nok += 1
-              iter.next
-            end
-          end
-        end,
-        proc do
-          EM.stop
-          result_ips.each { |ip| puts ip }
-          $stderr.puts "#{ok} succeeded, #{nok} failed (#{ok + nok} total)"
-        end
+    query_queue = Queue.new
+    result_ips = Set.new
+    ok = 0
+    nok = 0
+    request = Message.new(@query)
+    request.header.rd = false
+    request.do_caching = false
+    request.do_validation = false
+
+    @ns_ips.each_with_index do |ns_ip, index|
+      resolver = Dnsruby::Resolver.new(
+        nameserver: ns_ip.to_s,
+        do_validation: false,
+        ignore_truncation: true,
+        query_timeout: @timeout_seconds,
+        recurse: false,
+        retry_times: 1
       )
+      resolver.send_async(request, query_queue, index)
     end
+
+    consumer = Thread.new do
+      sleep @timeout_seconds
+      @ns_ips.size.times do
+        response_id, response, exception = query_queue.pop(non_block: true) rescue nil
+        if exception.nil?
+          response.each_resource do |rr|
+            result_ips.add(rr.address) if rr.instance_of?(Dnsruby::RR::IN::A)
+          end
+          ok +=1
+        else
+          nok += 1
+          next
+        end unless response_id.nil?
+      end
+    end
+
+    consumer.join
+
+    result_ips.each { |ip| puts ip }
+    $stderr.puts "#{ok} succeeded, #{nok} failed (#{ok + nok} total)"
+    $stderr.puts "#{result_ips.size} unique result(s) found for '#{query}'"
   end
+
 
   def self.run(options)
     new(options).run
@@ -79,8 +91,4 @@ class Globetrotter
     end.map(&:ip)
   end
 
-  def resolve_with_nameserver(query, nameserver)
-    resolver = RubyDNS::Resolver.new([[:udp, nameserver, 53]])
-    resolver.query(query)
-  end
 end
