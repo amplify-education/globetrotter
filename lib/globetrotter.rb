@@ -8,12 +8,12 @@ require 'set'
 require 'ipaddr'
 
 class Globetrotter
-  def initialize(options = {})
-    @ns_max_age_minutes = options.fetch(:ns_max_age_minutes, 60)
-    @ns_count_to_check = options.fetch(:ns_count_to_check, 100)
-    @timeout_seconds = options.fetch(:timeout_seconds, 2)
-    @query = options.fetch(:query, 'googleapis.com')
-    @concurrency = options.fetch(:concurrency, 10)
+  def initialize(options)
+    @ns_max_age_minutes = options.ns_max_age_minutes
+    @ns_count_to_check = options.ns_count_to_check
+    @timeout_seconds = options.timeout_seconds
+    @query = options.domain
+    @concurrency = options.ns_query_concurrency
     @ns_ips = fetch_ns_ips
   end
 
@@ -62,7 +62,7 @@ class Globetrotter
     end
   end
 
-  def self.run(options = {})
+  def self.run(options)
     new(options).run
   end
 
@@ -72,10 +72,10 @@ class Globetrotter
 
   def fetch_ns_ips
     Wrest.logger = Logger.new(STDERR)
-    uri = 'http://public-dns.tk/nameservers.json'.to_uri
+    uri = "http://public-dns.tk/nameservers.json".to_uri
     nameservers = uri.get.deserialise.map { |data| Nameserver.new(data) }
     nameservers.select do |ns|
-      ns.valid? && ns.ipv4? && ns.age_minutes <= ns_max_age_minutes
+      ns.valid? && ns.ipv4? && (ns.age_minutes <= @ns_max_age_minutes)
     end.map(&:ip)
   end
 
