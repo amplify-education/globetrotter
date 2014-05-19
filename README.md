@@ -7,8 +7,9 @@ globetrotter retrieves a list of DNS servers around the world from the [Public D
 `gem install globetrotter`
 
 ## Usage
-Query 100 DNS servers for googleapis.com, making 10 requests in parallel at a time:
-`globetrotter -q googleapis.com -c 100 -p 10`
+Query 100 DNS servers for googleapis.com, making 10 requests in parallel at a time (defaults):
+
+    $ globetrotter -q googleapis.com -n 100 -p 10
 
 See `globetrotter -h` for all parameters
 
