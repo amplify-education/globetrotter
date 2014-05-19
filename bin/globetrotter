@@ -20,16 +20,16 @@ class GlobetrotterOptions
       opts.on('-q googleapis.com', String, 'Domain to look up') do |o|
         options.domain = o
       end
-      opts.on('-n 100', Integer, 'Query N name servers') do |o|
+      opts.on('-n 100', Integer, 'Query n name servers') do |o|
         options.ns_count_to_check = o
       end
-      opts.on('-t 5', Integer, 'Wait time seconds per request') do |o|
+      opts.on('-t 5', Integer, 'Wait t seconds for query responses') do |o|
         options.timeout_seconds = o
       end
       # opts.on('-p 10', Integer, 'Query P name servers in parallel') do |o|
       #   options.ns_query_concurrency = o
       # end
-      opts.on('-a 60', Integer, 'Use name servers checked less than A minutes ago') do |o|
+      opts.on('-a 60', Integer, 'Use name servers checked less than a minutes ago') do |o|
         options.ns_max_age_minutes = o
       end
       opts.on_tail('-h', '--help', 'Display CLI help (this output)') do |o|
