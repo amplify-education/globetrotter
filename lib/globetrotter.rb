@@ -6,7 +6,6 @@ require 'time'
 require 'date'
 require 'set'
 require 'ipaddr'
-require 'pp'
 
 include Dnsruby
 

@@ -23,5 +23,4 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'wrest', '~> 1.5'
   spec.add_runtime_dependency 'dnsruby', '~> 1.54'
-  spec.add_runtime_dependency 'eventmachine', '~> 1.0'
 end
