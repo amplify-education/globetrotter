@@ -31,8 +31,12 @@ class Globetrotter
     $stderr.puts message
 
     EM.run do
-      result_ips = Set.new
-      result_ips.merge(@file.set) if @file
+      if @file
+        result_ips = @file.set
+        size_before = result_ips.size
+      else
+        result_ips = Set.new
+      end
       ok = 0
       nok = 0
       EM::Iterator.new(@ns_ips, @concurrency).each(
@@ -45,7 +49,7 @@ class Globetrotter
             case response
             when RubyDNS::Message
               response.answer.each do |answer|
-                address = answer[2].address.to_s
+                address = IPAddr.new(answer[2].address.to_s)
                 result_ips.add(address)
               end
               ok += 1
@@ -59,13 +63,15 @@ class Globetrotter
         proc do
           EM.stop
           if @file
+            size_after = result_ips.size
+            new_results = size_after - size_before
             @file.set = result_ips
             @file.write
           else
             result_ips.each { |ip| puts ip }
           end
           $stderr.puts "#{ok} succeeded, #{nok} failed (#{ok + nok} total)"
-          $stderr.puts "Results written to #{@file}" if @file
+          $stderr.puts "Wrote #{new_results} new unique result(s) to #{@file}" if @file
         end
       )
     end
