@@ -1,5 +1,6 @@
-require_relative './globetrotter/version'
-require_relative './globetrotter/nameserver'
+require 'globetrotter/version'
+require 'globetrotter/nameserver'
+require 'globetrotter/file'
 require 'wrest'
 require 'rubydns'
 require 'time'
@@ -15,6 +16,7 @@ class Globetrotter
     @query = options.domain
     @concurrency = options.ns_query_concurrency
     @ns_ips = fetch_ns_ips
+    @file = GlobetrotterFile.new(options.file) if options.file
   end
 
   def run
@@ -30,6 +32,7 @@ class Globetrotter
 
     EM.run do
       result_ips = Set.new
+      result_ips.merge(@file.set) if @file
       ok = 0
       nok = 0
       EM::Iterator.new(@ns_ips, @concurrency).each(
@@ -55,8 +58,14 @@ class Globetrotter
         end,
         proc do
           EM.stop
-          result_ips.each { |ip| puts ip }
+          if @file
+            @file.set = result_ips
+            @file.write
+          else
+            result_ips.each { |ip| puts ip }
+          end
           $stderr.puts "#{ok} succeeded, #{nok} failed (#{ok + nok} total)"
+          $stderr.puts "Results written to #{@file}" if @file
         end
       )
     end

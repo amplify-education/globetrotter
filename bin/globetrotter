@@ -4,7 +4,6 @@ $:.unshift File.join(File.dirname(__FILE__), %w{.. lib})
 require 'globetrotter'
 require 'optparse'
 require 'ostruct'
-require 'dnsruby'
 
 class GlobetrotterOptions
   def self.parse(args)
@@ -14,6 +13,7 @@ class GlobetrotterOptions
     options.ns_max_age_minutes = 60
     options.timeout_seconds = 2
     options.ns_query_concurrency = 10
+    options.file = false
 
     opt_parser = OptionParser.new do |opts|
       opts.banner = 'Usage: globetrotter [options] example.org'
@@ -31,6 +31,9 @@ class GlobetrotterOptions
       end
       opts.on('-a 60', Integer, 'Use name servers checked less than A minutes ago') do |o|
         options.ns_max_age_minutes = o
+      end
+      opts.on('-f /path/to/file', String, 'Read/write data to this file') do |o|
+        options.file = o
       end
       opts.on_tail('-h', '--help', 'Display CLI help (this output)') do |o|
         puts opts.help
