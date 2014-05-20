@@ -11,7 +11,7 @@ Query 100 DNS servers for googleapis.com, making 10 requests in parallel at a ti
 
     $ globetrotter -q googleapis.com -c 100 -p 10
     
-Write results for google.com to /tmp/google.txt - file will be created if it doens't exist
+Write results for google.com to /tmp/google.txt - file will be created if it doesn't exist
 
     $ globetrotter -q google.com -f /tmp/google.txt
 
