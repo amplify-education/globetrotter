@@ -24,10 +24,10 @@ class Globetrotter
     @ns_count_to_check = ns_count if @ns_count_to_check > ns_count
     @ns_ips = @ns_ips.sample(@ns_count_to_check)
 
-    message = "Found #{ns_count} nameserver(s). "\
+    message = "Found #{ns_count} nameserver#{'s' unless ns_count.size == 1}. "\
               "Querying #{@ns_count_to_check} of those "\
-              "for #{query}, #{@concurrency} at a time, "\
-              "with a timeout of #{@timeout_seconds} second(s)."
+              "for '#{query}', #{@concurrency} at a time, "\
+              "with a timeout of #{@timeout_seconds} second#{'s' unless @timeout_seconds == 1}."
     $stderr.puts message
 
     EM.run do
@@ -71,7 +71,7 @@ class Globetrotter
             result_ips.each { |ip| puts ip }
           end
           $stderr.puts "#{ok} succeeded, #{nok} failed (#{ok + nok} total)"
-          $stderr.puts "Wrote #{new_results} new unique result(s) to #{@file}" if @file
+          $stderr.puts "Wrote #{new_results} new unique result#{'s' unless new_results.size == 1} to #{@file}" if @file
         end
       )
     end
